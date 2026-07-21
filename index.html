@@ -374,26 +374,33 @@ function renderAll(){
  
 function renderPnL(){
   const m=compute(STATE.customerRows), c=COSTS, rev=m.aov;
-  const gst=rev*(c.gst/(1+c.gst)), product=rev*c.product, merchant=rev*c.merchant;
+  const gstPer=rev*(c.gst/(1+c.gst)), merchantPer=rev*c.merchant;
+  // Product cost applies only to revenue beyond the first order (free bottle carries no product cost).
+  const subsequentRevenue = STATE.customerRows
+    .filter(r=>r.orders>1)
+    .reduce((a,r)=>a+Math.max(r.spent-10,0),0);
+  const productTotal = c.product * subsequentRevenue;
+  const productPer = m.orders ? productTotal/m.orders : 0;
   const lines=[
     ["Revenue (avg order)", rev, false],
-    ["GST", gst, true],
-    ["Product cost ("+Math.round(c.product*100)+"%)", product, true],
+    ["GST", gstPer, true],
+    ["Product cost (repeat orders)", productPer, true],
     ["Shipping", c.shipping, true],
     ["Pick and pack", c.pickpack, true],
     ["Packaging", c.packaging, true],
     ["Transaction fee", c.txn, true],
-    ["Merchant fee ("+(c.merchant*100).toFixed(1)+"%)", merchant, true],
+    ["Merchant fee ("+(c.merchant*100).toFixed(1)+"%)", merchantPer, true],
   ];
-  const contribution = rev - gst - product - merchant - c.shipping - c.pickpack - c.packaging - c.txn;
+  const contribution = rev - gstPer - productPer - merchantPer - c.shipping - c.pickpack - c.packaging - c.txn;
   const totalAdSpend = STATE.meta.spend + STATE.tiktok.spend;
   const mktg = m.customers>0 ? totalAdSpend/m.customers : 0;
   const net = contribution - mktg;
   const cohort = contribution*m.orders - totalAdSpend;
+  const cell = (v,neg) => (Math.abs(v)<0.005 ? money(0) : (neg?"-":"")+money(v));
   const signed = v => (v<0?"-":"") + money(Math.abs(v));
   document.getElementById("pnl-lines").innerHTML =
     lines.map(l=>`<div class="pl"><span class="pl-k">${l[0]}</span>`+
-      `<span class="pl-v">${(l[2]?"-":"")+money(l[1])}</span></div>`).join("") +
+      `<span class="pl-v">${cell(l[1],l[2])}</span></div>`).join("") +
     `<div class="pl subtotal"><span class="pl-k">Contribution per order</span>`+
       `<span class="pl-v">${signed(contribution)}</span></div>`+
     `<div class="pl"><span class="pl-k">Marketing (per redemption)</span>`+
