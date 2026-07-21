@@ -14,14 +14,14 @@
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);
     line-height:1.45;padding:32px 20px 64px;font-feature-settings:"tnum" 1,"cv01" 1}
   .wrap{max-width:960px;margin:0 auto}
-
+ 
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
     text-transform:uppercase;color:var(--accent);font-weight:600}
   h1{font-size:26px;font-weight:650;letter-spacing:-.01em;margin:6px 0 2px}
   .meta{font-family:var(--mono);font-size:12px;color:var(--muted)}
   .head{display:flex;justify-content:space-between;align-items:flex-start;
     gap:16px;flex-wrap:wrap;margin-bottom:24px}
-
+ 
   .drop{border:1px dashed var(--line);border-radius:10px;background:var(--surface);
     padding:10px 14px;font-size:12px;color:var(--muted);cursor:pointer;
     transition:border-color .15s,background .15s;white-space:nowrap}
@@ -30,7 +30,7 @@
   #file{display:none}
   .mode{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
   .mode b{color:var(--accent)}
-
+ 
   .grid4{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
     padding:16px 16px 14px;position:relative;display:flex;flex-direction:column;min-height:120px}
@@ -42,7 +42,7 @@
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
   .panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
     text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:14px}
-
+ 
   .bar{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
   .bar .lab{width:78px;color:var(--muted);font-family:var(--mono);font-size:12px;flex:none}
   .bar .track{flex:1;height:20px;background:var(--bg);border-radius:5px;overflow:hidden}
@@ -50,13 +50,16 @@
     transition:width .5s ease}
   .bar .num{width:52px;text-align:right;font-family:var(--mono);font-size:12px;
     font-variant-numeric:tabular-nums;flex:none}
-
+  .bar .cpl{width:58px;text-align:right;font-family:var(--mono);font-size:12px;
+    color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+  #dist-funnel .lab{width:126px}
+ 
   .note{font-size:12.5px;color:var(--muted);line-height:1.55}
   .note b{color:var(--ink);font-weight:600}
   .note .flag{color:var(--flag);font-weight:600}
   footer{margin-top:22px;font-family:var(--mono);font-size:11px;color:var(--muted);
     border-top:1px solid var(--line);padding-top:12px}
-
+ 
   @media(max-width:720px){
     .grid4{grid-template-columns:repeat(2,1fr)}
     .panels{grid-template-columns:1fr}
@@ -64,7 +67,7 @@
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-
+ 
 <div class="wrap">
   <div class="head">
     <div>
@@ -73,12 +76,12 @@
       <div class="meta" id="meta"></div>
     </div>
     <div>
-      <label class="drop" id="drop" for="file">Drop a new <b>customers_export.csv</b> to refresh, or click</label>
+      <label class="drop" id="drop" for="file">Drop a <b>customers</b>, <b>Meta</b> or <b>TikTok</b> export to refresh, or click</label>
       <input type="file" id="file" accept=".csv">
       <div class="mode" id="mode"></div>
     </div>
   </div>
-
+ 
   <div class="grid4">
     <div class="card"><div class="k">Orders</div><div class="v" id="v-orders"></div></div>
     <div class="card"><div class="k">Customers</div><div class="v" id="v-cust"></div></div>
@@ -86,7 +89,18 @@
     <div class="card"><div class="k">Avg order value</div><div class="v" id="v-aov"></div></div>
     <div class="card"><div class="k">Subsequent order value average</div><div class="v" id="v-subaov"></div></div>
   </div>
-
+ 
+  <div class="panels">
+    <div class="panel">
+      <h2>Leads by platform</h2>
+      <div id="dist-leads"></div>
+    </div>
+    <div class="panel">
+      <h2>Leads to redemptions</h2>
+      <div id="dist-funnel"></div>
+    </div>
+  </div>
+ 
   <div class="panels">
     <div class="panel" id="panel-consent">
       <h2>Reachable database</h2>
@@ -97,7 +111,7 @@
       <div id="dist-geo"></div>
     </div>
   </div>
-
+ 
   <div class="panels">
     <div class="panel">
       <h2>Spend per customer</h2>
@@ -108,16 +122,19 @@
       <div id="dist-opc"></div>
     </div>
   </div>
-
+ 
   <footer id="foot"></footer>
 </div>
-
+ 
 <script>
 const BASELINE = [{"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 22.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "SA", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}];
 const EXPORT_DATE = "20 Jul 2026";
+// Weekly ad lead-gen figures (baked from the Meta and TikTok exports; updated on drop).
+const AD_DATA = { meta:{leads:118, spend:43.11}, tiktok:{leads:79, spend:106.99} };
 const money = n => "$" + n.toLocaleString("en-AU",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = v => { const x=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); return isNaN(x)?0:x; };
 const int = n => n.toLocaleString("en-AU");
-
+ 
 // One compute path for both the baked baseline and any re-uploaded file.
 function compute(rows){
   const customers = rows.length;
@@ -125,7 +142,7 @@ function compute(rows){
   const spent = rows.reduce((a,r)=>a+r.spent,0);
   const opc = customers ? orders/customers : 0;
   const aov = orders ? spent/orders : 0;
-
+ 
   const opcDist={}; rows.forEach(r=>{const k=r.orders; opcDist[k]=(opcDist[k]||0)+1;});
   const geo={}; rows.forEach(r=>{const k=r.prov||"NA"; geo[k]=(geo[k]||0)+1;});
   // spend buckets
@@ -155,25 +172,50 @@ function compute(rows){
   };
   return {customers,orders,spent,opc,aov,opcDist,geo,spendDist,repeat,zeroSpend,subsequentAOV,hasConsent,consent};
 }
-
+ 
 function barRow(label,val,max,suffix){
   const pct = max ? Math.round(val/max*100) : 0;
   return `<div class="bar"><span class="lab">${label}</span>`+
     `<span class="track"><span class="fill" style="width:${pct}%"></span></span>`+
     `<span class="num">${val}${suffix||""}</span></div>`;
 }
-
+ 
+function leadRow(label,leads,max,cpl){
+  const pct = max ? Math.round(leads/max*100) : 0;
+  return `<div class="bar"><span class="lab">${label}</span>`+
+    `<span class="track"><span class="fill" style="width:${pct}%"></span></span>`+
+    `<span class="num">${int(leads)}</span>`+
+    `<span class="cpl">${cpl}</span></div>`;
+}
+ 
+function renderLeads(){
+  const meta=STATE.meta, tt=STATE.tiktok;
+  const totalLeads=meta.leads+tt.leads, totalSpend=meta.spend+tt.spend;
+  const cpl=(s,l)=> l>0 ? money(s/l) : "n/a";
+  document.getElementById("dist-leads").innerHTML =
+    leadRow("Meta",   meta.leads, totalLeads, cpl(meta.spend,meta.leads)) +
+    leadRow("TikTok", tt.leads,   totalLeads, cpl(tt.spend,tt.leads)) +
+    leadRow("Total",  totalLeads, totalLeads, cpl(totalSpend,totalLeads));
+ 
+  const redemptions=STATE.customerRows.length;
+  const rate = totalLeads ? Math.round(redemptions/totalLeads*100) : 0;
+  document.getElementById("dist-funnel").innerHTML =
+    barRow("Leads", totalLeads, totalLeads) +
+    barRow("Redemptions", redemptions, totalLeads) +
+    barRow("Redemption rate", rate, 100, "%");
+}
+ 
 function render(rows, source){
   const m = compute(rows);
   document.getElementById("meta").textContent =
     `${int(m.customers)} customers  ${'\u00b7'}  ${source==="baseline" ? ("exported "+EXPORT_DATE) : "re-uploaded file"}`;
-
+ 
   document.getElementById("v-orders").textContent = int(m.orders);
   document.getElementById("v-cust").textContent   = int(m.customers);
   document.getElementById("v-opc").textContent    = m.opc.toFixed(2);
   document.getElementById("v-aov").textContent    = money(m.aov);
   document.getElementById("v-subaov").textContent = m.subsequentAOV==null ? "n/a" : money(m.subsequentAOV);
-
+ 
   // reachable database (marketing consent), as a share of the cohort
   const panelConsent = document.getElementById("panel-consent");
   if(m.hasConsent){
@@ -185,37 +227,37 @@ function render(rows, source){
   } else {
     panelConsent.style.display = "none";
   }
-
+ 
   // orders per customer distribution
   const opcKeys = Object.keys(m.opcDist).map(Number).sort((a,b)=>a-b);
   const opcMax = Math.max(...opcKeys.map(k=>m.opcDist[k]));
   document.getElementById("dist-opc").innerHTML =
     opcKeys.map(k=>barRow(k+(k==1?" order":" orders"), m.opcDist[k], opcMax)).join("");
-
+ 
   // geo
   const geoKeys = Object.keys(m.geo).sort((a,b)=>m.geo[b]-m.geo[a]);
   const geoMax = Math.max(...geoKeys.map(k=>m.geo[k]));
   document.getElementById("dist-geo").innerHTML =
     geoKeys.map(k=>barRow(k, m.geo[k], geoMax)).join("");
-
+ 
   // spend
   const spendVals = m.spendDist.filter(b=>b[1]>0);
   const spendMax = Math.max(...spendVals.map(b=>b[1]),1);
   document.getElementById("dist-spend").innerHTML =
     spendVals.map(b=>barRow(b[0], b[1], spendMax)).join("");
-
+ 
   document.getElementById("foot").textContent =
     `Total spend ${money(m.spent)}  ${'\u00b7'}  source: ${source==="baseline"?"customers_export.csv":"re-uploaded file"}  ${'\u00b7'}  emails, phones and addresses are not stored in this file`;
 }
-
+ 
 // Map a re-uploaded Shopify export to the minimal row shape, detecting export type.
 function ingest(data, fields){
   const has = n => fields.some(f=>f.trim().toLowerCase()===n);
   const col = (r,names) => { for(const n of names){ for(const k in r){ if(k.trim().toLowerCase()===n) return r[k]; } } return undefined; };
   const num = v => { const x=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); return isNaN(x)?0:x; };
-
+ 
   const yn = v => String(v).trim().toLowerCase()==="yes" ? 1 : 0;
-
+ 
   if(has("total orders") && has("total spent")){
     const rows = data.filter(r=>Object.keys(r).length>1).map(r=>({
       orders:Math.round(num(col(r,["total orders"]))),
@@ -241,7 +283,7 @@ function ingest(data, fields){
   const rows=Object.values(perCust);
   return {rows, mode:"orders export (rolled up to one row per customer)"};
 }
-
+ 
 // Self-contained CSV parser (handles quoted fields, embedded commas/newlines, "" escapes, CRLF).
 function parseCSV(text){
   if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
@@ -270,27 +312,68 @@ function parseCSV(text){
   }
   return {fields, data};
 }
-
+ 
 function loadFile(file){
   const reader=new FileReader();
   reader.onload=()=>{
-    try{
-      const {fields,data}=parseCSV(reader.result);
-      const {rows,mode}=ingest(data,fields);
-      if(!rows.length){ document.getElementById("mode").innerHTML="Could not read any rows from that file."; return; }
-      document.getElementById("mode").innerHTML="Read as <b>"+mode+"</b>";
-      render(rows,"upload");
-    }catch(e){ document.getElementById("mode").textContent="That file did not parse. Check it is a Shopify CSV export."; }
+    try{ handleCSV(reader.result); }
+    catch(e){ document.getElementById("mode").textContent="That file did not parse. Check it is a Shopify, Meta or TikTok CSV export."; }
   };
   reader.onerror=()=>{ document.getElementById("mode").textContent="Could not read that file."; };
   reader.readAsText(file);
 }
-
+ 
+// Dashboard state: one customer source plus the two ad sources, each updated independently on drop.
+const STATE = { customerRows: BASELINE, customerSource:"baseline", meta:AD_DATA.meta, tiktok:AD_DATA.tiktok };
+ 
+function renderAll(){
+  render(STATE.customerRows, STATE.customerSource);
+  renderLeads();
+}
+ 
+// Sum a numeric column across data rows, skipping any platform "Total ..." summary row.
+function sumCol(data, col, nameCol, names){
+  const pick=(r,ns)=>{ for(const n of ns){ for(const k in r){ if(k.trim().toLowerCase()===n) return r[k]; } } return undefined; };
+  let sum=0;
+  data.forEach(r=>{
+    const label=String(pick(r,nameCol)||"").trim().toLowerCase();
+    if(label.startsWith("total")) return; // skip summary rows
+    sum+=num(pick(r,names));
+  });
+  return sum;
+}
+ 
+function handleCSV(text){
+  const {fields,data}=parseCSV(text);
+  const lower=fields.map(f=>f.trim().toLowerCase());
+  const hasf=n=>lower.includes(n);
+  const rows=data.filter(r=>Object.keys(r).length>1);
+  const setMode=t=>document.getElementById("mode").innerHTML=t;
+ 
+  if(hasf("total orders") && hasf("total spent")){
+    const {rows:cust,mode}=ingest(data,fields);
+    if(!cust.length){ setMode("Could not read any rows from that file."); return; }
+    STATE.customerRows=cust; STATE.customerSource="upload"; setMode("Read as <b>"+mode+"</b>");
+  } else if(hasf("ad name") && (hasf("results")||hasf("cost per result"))){
+    STATE.meta={ leads:sumCol(rows,["ad name"],["ad name"],["results"]),
+                 spend:sumCol(rows,["ad name"],["ad name"],["amount spent (aud)","amount spent","spend"]) };
+    setMode("Read as <b>Meta lead-gen export</b>");
+  } else if(hasf("campaign name") && (hasf("conversions")||hasf("cost per conversion"))){
+    STATE.tiktok={ leads:sumCol(rows,["conversions"],["campaign name"],["conversions"]),
+                   spend:sumCol(rows,["spend"],["campaign name"],["spend"]) };
+    setMode("Read as <b>TikTok lead-gen export</b>");
+  } else {
+    setMode("Unrecognised file. Expected a Shopify customers export, or a Meta or TikTok lead-gen export.");
+    return;
+  }
+  renderAll();
+}
+ 
 const drop=document.getElementById("drop"), input=document.getElementById("file");
 input.addEventListener("change",e=>{ if(e.target.files[0]) loadFile(e.target.files[0]); });
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
 drop.addEventListener("drop",e=>{ if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
-
-render(BASELINE,"baseline");
+ 
+renderAll();
 </script>
