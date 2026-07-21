@@ -5,7 +5,7 @@
 <style>
   :root{
     --bg:#EDF0EE; --surface:#FFFFFF; --line:#D6DCD8; --ink:#182420;
-    --muted:#5C6862; --accent:#2C7A6A; --accent-soft:#DCEBE6; --flag:#B07A22;
+    --muted:#5C6862; --accent:#2C7A6A; --accent-soft:#DCEBE6; --flag:#B07A22; --loss:#B23A2E;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Menlo,Consolas,monospace;
     --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
@@ -58,6 +58,24 @@
     font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
   .statline .sl-k{color:var(--muted)}
   .statline .sl-v{font-weight:600}
+  .pnl-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:start}
+  .pl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;
+    padding:6px 0;border-bottom:1px solid var(--line)}
+  .pl:last-child{border-bottom:none}
+  .pl-k{color:var(--muted)}
+  .pl-v{font-variant-numeric:tabular-nums}
+  .pl.subtotal{border-top:2px solid var(--line);border-bottom:none;font-weight:600;margin-top:2px}
+  .pl.subtotal .pl-k{color:var(--ink)}
+  .pnl-out{border-left:1px solid var(--line);padding-left:26px}
+  .pnl-out-k,.pnl-out-k2{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);font-weight:600}
+  .pnl-out-v{font-family:var(--mono);font-size:26px;font-weight:600;margin:6px 0 20px;
+    font-variant-numeric:tabular-nums}
+  .pnl-out-total{font-family:var(--mono);font-size:32px;font-weight:600;margin-top:6px;
+    font-variant-numeric:tabular-nums}
+  .loss{color:var(--loss)}
+  @media(max-width:720px){.pnl-grid{grid-template-columns:1fr}
+    .pnl-out{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:4px}}
  
   .note{font-size:12.5px;color:var(--muted);line-height:1.55}
   .note b{color:var(--ink);font-weight:600}
@@ -128,6 +146,19 @@
     </div>
   </div>
  
+  <div class="panel" id="panel-pnl" style="margin-top:12px">
+    <h2>Profit and loss (per order)</h2>
+    <div class="pnl-grid">
+      <div id="pnl-lines"></div>
+      <div class="pnl-out">
+        <div class="pnl-out-k">Net per order</div>
+        <div class="pnl-out-v" id="pnl-perorder"></div>
+        <div class="pnl-out-k2">Cohort &middot; <span id="pnl-orders"></span> orders</div>
+        <div class="pnl-out-total" id="pnl-total"></div>
+      </div>
+    </div>
+  </div>
+ 
   <footer id="foot"></footer>
 </div>
  
@@ -136,6 +167,8 @@ const BASELINE = [{"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w
 const EXPORT_DATE = "20 Jul 2026";
 // Weekly ad lead-gen figures (baked from the Meta and TikTok exports; updated on drop).
 const AD_DATA = { meta:{leads:118, spend:43.11}, tiktok:{leads:79, spend:106.99} };
+// Variable cost model per order. Percentages apply to order revenue; the rest are fixed dollars.
+const COSTS = { gst:0.10, product:0.35, merchant:0.016, shipping:10.61, pickpack:4.30, packaging:0.51, txn:0.30 };
 const money = n => "$" + n.toLocaleString("en-AU",{minimumFractionDigits:2,maximumFractionDigits:2});
 const num = v => { const x=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); return isNaN(x)?0:x; };
 const int = n => n.toLocaleString("en-AU");
@@ -336,6 +369,40 @@ const STATE = { customerRows: BASELINE, customerSource:"baseline", meta:AD_DATA.
 function renderAll(){
   render(STATE.customerRows, STATE.customerSource);
   renderLeads();
+  renderPnL();
+}
+ 
+function renderPnL(){
+  const m=compute(STATE.customerRows), c=COSTS, rev=m.aov;
+  const gst=rev*(c.gst/(1+c.gst)), product=rev*c.product, merchant=rev*c.merchant;
+  const lines=[
+    ["Revenue (avg order)", rev, false],
+    ["GST", gst, true],
+    ["Product cost ("+Math.round(c.product*100)+"%)", product, true],
+    ["Shipping", c.shipping, true],
+    ["Pick and pack", c.pickpack, true],
+    ["Packaging", c.packaging, true],
+    ["Transaction fee", c.txn, true],
+    ["Merchant fee ("+(c.merchant*100).toFixed(1)+"%)", merchant, true],
+  ];
+  const contribution = rev - gst - product - merchant - c.shipping - c.pickpack - c.packaging - c.txn;
+  const totalAdSpend = STATE.meta.spend + STATE.tiktok.spend;
+  const mktg = m.customers>0 ? totalAdSpend/m.customers : 0;
+  const net = contribution - mktg;
+  const cohort = contribution*m.orders - totalAdSpend;
+  const signed = v => (v<0?"-":"") + money(Math.abs(v));
+  document.getElementById("pnl-lines").innerHTML =
+    lines.map(l=>`<div class="pl"><span class="pl-k">${l[0]}</span>`+
+      `<span class="pl-v">${(l[2]?"-":"")+money(l[1])}</span></div>`).join("") +
+    `<div class="pl subtotal"><span class="pl-k">Contribution per order</span>`+
+      `<span class="pl-v">${signed(contribution)}</span></div>`+
+    `<div class="pl"><span class="pl-k">Marketing (per redemption)</span>`+
+      `<span class="pl-v">-${money(mktg)}</span></div>`;
+  const perEl=document.getElementById("pnl-perorder");
+  perEl.textContent=signed(net); perEl.className="pnl-out-v"+(net<0?" loss":"");
+  const totEl=document.getElementById("pnl-total");
+  totEl.textContent=signed(cohort); totEl.className="pnl-out-total"+(cohort<0?" loss":"");
+  document.getElementById("pnl-orders").textContent=int(m.orders);
 }
  
 // Sum a numeric column across data rows, skipping any platform "Total ..." summary row.
