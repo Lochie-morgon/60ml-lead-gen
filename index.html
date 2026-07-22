@@ -58,6 +58,12 @@
     font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
   .statline .sl-k{color:var(--muted)}
   .statline .sl-v{font-weight:600}
+  .panel.pin{display:flex;flex-direction:column}
+  .panel.pin > [id^="dist-"]{flex:1;display:flex;flex-direction:column}
+  .panel.pin .statline, .panel.pin .tot{margin-top:auto}
+  .bar.tot{margin:0;border-top:1px solid var(--line);padding-top:12px;font-weight:600}
+  .bar.tot .tot-lab{flex:1;font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .bar.tot .num,.bar.tot .cpl{font-weight:600;color:var(--ink)}
   .pnl-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:start}
   .pl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;
     padding:6px 0;border-bottom:1px solid var(--line)}
@@ -74,6 +80,15 @@
   .pnl-out-total{font-family:var(--mono);font-size:32px;font-weight:600;margin-top:6px;
     font-variant-numeric:tabular-nums}
   .loss{color:var(--loss)}
+  .linechart{width:100%;height:auto;display:block}
+  .linechart .grid{stroke:var(--line);stroke-width:1}
+  .linechart .area{fill:var(--accent-soft);opacity:.55}
+  .linechart .line{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .linechart .dot{fill:var(--accent)}
+  .linechart .ylab{fill:var(--muted);font-family:var(--mono);font-size:10px;text-anchor:end}
+  .linechart .xlab{fill:var(--muted);font-family:var(--mono);font-size:10px}
+  .linechart .dlab{fill:var(--ink);font-family:var(--mono);font-size:11px;font-weight:600}
+  .empty{font-family:var(--mono);font-size:12px;color:var(--muted);padding:4px 0 2px}
   @media(max-width:720px){.pnl-grid{grid-template-columns:1fr}
     .pnl-out{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:4px}}
  
@@ -113,12 +128,17 @@
     <div class="card"><div class="k">Subsequent order value average</div><div class="v" id="v-subaov"></div></div>
   </div>
  
+  <div class="panel" style="margin-top:12px">
+    <h2>New redemptions per day</h2>
+    <div id="chart-redemptions"></div>
+  </div>
+ 
   <div class="panels">
-    <div class="panel">
+    <div class="panel pin">
       <h2>Leads by platform</h2>
       <div id="dist-leads"></div>
     </div>
-    <div class="panel">
+    <div class="panel pin">
       <h2>Leads to redemptions</h2>
       <div id="dist-funnel"></div>
     </div>
@@ -166,7 +186,9 @@
 const BASELINE = [{"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 55.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 22.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 0.0, "prov": "QLD", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "SA", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "ACT", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}];
 const EXPORT_DATE = "22 Jul 2026";
 // Weekly ad lead-gen figures (baked from the Meta and TikTok exports; updated on drop).
-const AD_DATA = { meta:{leads:168, spend:60.90}, tiktok:{leads:84, spend:119.64} };
+const AD_DATA = { meta:{leads:168, spend:60.90}, tiktok:{leads:84, spend:119.64}, organic:{leads:1, spend:0} };
+// Daily new redemptions by date; append one [date, count] each morning.
+const HISTORY = [["2026-07-17",7],["2026-07-18",6],["2026-07-19",8],["2026-07-20",30],["2026-07-21",11]];
 // Variable cost model per order. Percentages apply to order revenue; the rest are fixed dollars.
 // packaging is the subsequent-order cost; packagingFirst is the 60ml box on the first (claim) order.
 const COSTS = { gst:0.10, product:0.35, merchant:0.016, shipping:10.61, pickpack:4.30, packaging:0.51, packagingFirst:2.35, txn:0.30 };
@@ -228,19 +250,24 @@ function leadRow(label,leads,max,cpl){
 }
  
 function renderLeads(){
-  const meta=STATE.meta, tt=STATE.tiktok;
-  const totalLeads=meta.leads+tt.leads, totalSpend=meta.spend+tt.spend;
+  const meta=STATE.meta, tt=STATE.tiktok, org=STATE.organic;
+  const paidLeads=meta.leads+tt.leads, paidSpend=meta.spend+tt.spend;
+  const totalLeads=paidLeads+org.leads, totalSpend=paidSpend+org.spend;
   const cpl=(s,l)=> l>0 ? money(s/l) : "n/a";
   document.getElementById("dist-leads").innerHTML =
-    leadRow("Meta",   meta.leads, totalLeads, cpl(meta.spend,meta.leads)) +
-    leadRow("TikTok", tt.leads,   totalLeads, cpl(tt.spend,tt.leads)) +
-    leadRow("Total",  totalLeads, totalLeads, cpl(totalSpend,totalLeads));
+    leadRow("Meta",    meta.leads, totalLeads, cpl(meta.spend,meta.leads)) +
+    leadRow("TikTok",  tt.leads,   totalLeads, cpl(tt.spend,tt.leads)) +
+    leadRow("Organic", org.leads,  totalLeads, cpl(org.spend,org.leads)) +
+    `<div class="bar tot"><span class="tot-lab">Total leads</span>`+
+      `<span class="num">${int(totalLeads)}</span>`+
+      `<span class="cpl">${cpl(totalSpend,totalLeads)}</span></div>`;
  
   const redemptions=STATE.customerRows.length;
   const rate = totalLeads ? Math.round(redemptions/totalLeads*100) : 0;
-  const costPerRedemption = redemptions>0 ? money(totalSpend/redemptions) : "n/a";
+  const costPerRedemption = redemptions>0 ? money(paidSpend/redemptions) : "n/a";
   document.getElementById("dist-funnel").innerHTML =
-    barRow("Leads", totalLeads, totalLeads) +
+    barRow("Paid leads", paidLeads, totalLeads) +
+    barRow("Organic leads", org.leads, totalLeads) +
     barRow("Redemptions", redemptions, totalLeads) +
     barRow("Redemption rate", rate, 100, "%") +
     `<div class="statline"><span class="sl-k">Cost per redemption</span><span class="sl-v">${costPerRedemption}</span></div>`;
@@ -365,12 +392,44 @@ function loadFile(file){
 }
  
 // Dashboard state: one customer source plus the two ad sources, each updated independently on drop.
-const STATE = { customerRows: BASELINE, customerSource:"baseline", meta:AD_DATA.meta, tiktok:AD_DATA.tiktok };
+const STATE = { customerRows: BASELINE, customerSource:"baseline", meta:AD_DATA.meta, tiktok:AD_DATA.tiktok, organic:AD_DATA.organic };
  
 function renderAll(){
   render(STATE.customerRows, STATE.customerSource);
   renderLeads();
+  renderRedemptions();
   renderPnL();
+}
+ 
+function fmtDay(iso){ const d=new Date(iso); return isNaN(d)?iso:d.toLocaleDateString("en-AU",{day:"numeric",month:"short"}); }
+ 
+function drawLine(elId, series){
+  const el=document.getElementById(elId);
+  if(!series || series.length===0){
+    el.innerHTML='<div class="empty">Daily redemptions will chart from the next update.</div>'; return;
+  }
+  const W=920,H=210,padL=34,padR=16,padT=22,padB=34,iw=W-padL-padR,ih=H-padT-padB;
+  const n=series.length, maxY=Math.max(...series.map(s=>s[1]),1);
+  const X=i=> padL + (n===1? iw/2 : iw*i/(n-1));
+  const Y=v=> padT + ih - ih*v/maxY;
+  const pts=series.map((s,i)=>[X(i),Y(s[1])]);
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=`M${pts[0][0].toFixed(1)} ${padT+ih} `+pts.map(p=>"L"+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")+` L${pts[n-1][0].toFixed(1)} ${padT+ih} Z`;
+  const steps=Math.min(maxY,4)||1; let grid="";
+  for(let s=0;s<=steps;s++){ const v=Math.round(maxY*s/steps), yy=Y(v);
+    grid+=`<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${W-padR}" y2="${yy.toFixed(1)}" class="grid"/>`+
+          `<text x="${padL-6}" y="${(yy+3).toFixed(1)}" class="ylab">${v}</text>`; }
+  const idxs = n<=6 ? series.map((_,i)=>i) : [0,Math.floor((n-1)/2),n-1];
+  const xlabs = idxs.map(i=>`<text x="${X(i).toFixed(1)}" y="${H-12}" class="xlab" text-anchor="middle">${fmtDay(series[i][0])}</text>`).join("");
+  const marks = pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" class="dot"/>`+
+    `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" class="dlab" text-anchor="middle">${series[i][1]}</text>`).join("");
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" class="linechart" preserveAspectRatio="xMidYMid meet">`+
+    grid+`<path d="${area}" class="area"/><path d="${line}" class="line"/>`+marks+xlabs+`</svg>`;
+}
+ 
+function renderRedemptions(){
+  const h=HISTORY.slice().sort((a,b)=> a[0]<b[0]?-1:1);
+  drawLine("chart-redemptions", h);
 }
  
 function renderPnL(){
