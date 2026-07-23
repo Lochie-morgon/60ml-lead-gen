@@ -14,14 +14,14 @@
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);
     line-height:1.45;padding:32px 20px 64px;font-feature-settings:"tnum" 1,"cv01" 1}
   .wrap{max-width:960px;margin:0 auto}
- 
+
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
     text-transform:uppercase;color:var(--accent);font-weight:600}
   h1{font-size:26px;font-weight:650;letter-spacing:-.01em;margin:6px 0 2px}
   .meta{font-family:var(--mono);font-size:12px;color:var(--muted)}
   .head{display:flex;justify-content:space-between;align-items:flex-start;
     gap:16px;flex-wrap:wrap;margin-bottom:24px}
- 
+
   .drop{border:1px dashed var(--line);border-radius:10px;background:var(--surface);
     padding:10px 14px;font-size:12px;color:var(--muted);cursor:pointer;
     transition:border-color .15s,background .15s;white-space:nowrap}
@@ -30,7 +30,7 @@
   #file{display:none}
   .mode{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
   .mode b{color:var(--accent)}
- 
+
   .grid4{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
     padding:16px 16px 14px;position:relative;display:flex;flex-direction:column;min-height:120px}
@@ -42,7 +42,7 @@
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
   .panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
     text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:14px}
- 
+
   .bar{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
   .bar .lab{width:78px;color:var(--muted);font-family:var(--mono);font-size:12px;flex:none}
   .bar .track{flex:1;height:20px;background:var(--bg);border-radius:5px;overflow:hidden}
@@ -91,13 +91,13 @@
   .empty{font-family:var(--mono);font-size:12px;color:var(--muted);padding:4px 0 2px}
   @media(max-width:720px){.pnl-grid{grid-template-columns:1fr}
     .pnl-out{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:4px}}
- 
+
   .note{font-size:12.5px;color:var(--muted);line-height:1.55}
   .note b{color:var(--ink);font-weight:600}
   .note .flag{color:var(--flag);font-weight:600}
   footer{margin-top:22px;font-family:var(--mono);font-size:11px;color:var(--muted);
     border-top:1px solid var(--line);padding-top:12px}
- 
+
   @media(max-width:720px){
     .grid4{grid-template-columns:repeat(2,1fr)}
     .panels{grid-template-columns:1fr}
@@ -105,7 +105,7 @@
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
- 
+
 <div class="wrap">
   <div class="head">
     <div>
@@ -119,7 +119,7 @@
       <div class="mode" id="mode"></div>
     </div>
   </div>
- 
+
   <div class="grid4">
     <div class="card"><div class="k">Orders</div><div class="v" id="v-orders"></div></div>
     <div class="card"><div class="k">Customers</div><div class="v" id="v-cust"></div></div>
@@ -127,12 +127,12 @@
     <div class="card"><div class="k">Avg order value</div><div class="v" id="v-aov"></div></div>
     <div class="card"><div class="k">Subsequent order value average</div><div class="v" id="v-subaov"></div></div>
   </div>
- 
+
   <div class="panel" style="margin-top:12px">
     <h2>New redemptions per day</h2>
     <div id="chart-redemptions"></div>
   </div>
- 
+
   <div class="panels">
     <div class="panel pin">
       <h2>Leads by platform</h2>
@@ -143,7 +143,7 @@
       <div id="dist-funnel"></div>
     </div>
   </div>
- 
+
   <div class="panels">
     <div class="panel" id="panel-consent">
       <h2>Reachable database</h2>
@@ -154,7 +154,7 @@
       <div id="dist-geo"></div>
     </div>
   </div>
- 
+
   <div class="panels">
     <div class="panel">
       <h2>Spend per customer</h2>
@@ -165,7 +165,7 @@
       <div id="dist-opc"></div>
     </div>
   </div>
- 
+
   <div class="panel" id="panel-pnl" style="margin-top:12px">
     <h2>Profit and loss (per order)</h2>
     <div class="pnl-grid">
@@ -178,24 +178,24 @@
       </div>
     </div>
   </div>
- 
+
   <footer id="foot"></footer>
 </div>
- 
+
 <script>
-const BASELINE = [{"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 55.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 22.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 0.0, "prov": "QLD", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "SA", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "ACT", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}];
-const EXPORT_DATE = "22 Jul 2026";
+const BASELINE = [{"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 486.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "ACT", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 110.0, "prov": "QLD", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 4, "spent": 364.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 165.0, "prov": "ACT", "e": 0, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 22.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 0.0, "prov": "QLD", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "SA", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 0.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "ACT", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 20.0, "prov": "WA", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 20.0, "prov": "WA", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "ACT", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 2, "spent": 20.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "QLD", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 0, "s": 0, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "NSW", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}, {"orders": 1, "spent": 10.0, "prov": "VIC", "e": 1, "s": 1, "w": 0}];
+const EXPORT_DATE = "23 Jul 2026";
 // Weekly ad lead-gen figures (baked from the Meta and TikTok exports; updated on drop).
-const AD_DATA = { meta:{leads:168, spend:60.90}, tiktok:{leads:84, spend:119.64}, organic:{leads:1, spend:0} };
+const AD_DATA = { meta:{leads:231, spend:81.49}, tiktok:{leads:98, spend:140.45}, organic:{leads:67, spend:0} };
 // Daily new redemptions by date; append one [date, count] each morning.
-const HISTORY = [["2026-07-17",7],["2026-07-18",6],["2026-07-19",8],["2026-07-20",30],["2026-07-21",11]];
+const HISTORY = [["2026-07-17",7],["2026-07-18",6],["2026-07-19",8],["2026-07-20",30],["2026-07-21",11],["2026-07-22",59]];
 // Variable cost model per order. Percentages apply to order revenue; the rest are fixed dollars.
 // packaging is the subsequent-order cost; packagingFirst is the 60ml box on the first (claim) order.
 const COSTS = { gst:0.10, product:0.35, merchant:0.016, shipping:10.61, pickpack:4.30, packaging:0.51, packagingFirst:2.35, txn:0.30 };
 const money = n => "$" + n.toLocaleString("en-AU",{minimumFractionDigits:2,maximumFractionDigits:2});
 const num = v => { const x=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); return isNaN(x)?0:x; };
 const int = n => n.toLocaleString("en-AU");
- 
+
 // One compute path for both the baked baseline and any re-uploaded file.
 function compute(rows){
   const customers = rows.length;
@@ -203,7 +203,7 @@ function compute(rows){
   const spent = rows.reduce((a,r)=>a+r.spent,0);
   const opc = customers ? orders/customers : 0;
   const aov = orders ? spent/orders : 0;
- 
+
   const opcDist={}; rows.forEach(r=>{const k=r.orders; opcDist[k]=(opcDist[k]||0)+1;});
   const geo={}; rows.forEach(r=>{const k=r.prov||"NA"; geo[k]=(geo[k]||0)+1;});
   // spend buckets
@@ -233,14 +233,14 @@ function compute(rows){
   };
   return {customers,orders,spent,opc,aov,opcDist,geo,spendDist,repeat,zeroSpend,subsequentAOV,hasConsent,consent};
 }
- 
+
 function barRow(label,val,max,suffix){
   const pct = max ? Math.round(val/max*100) : 0;
   return `<div class="bar"><span class="lab">${label}</span>`+
     `<span class="track"><span class="fill" style="width:${pct}%"></span></span>`+
     `<span class="num">${val}${suffix||""}</span></div>`;
 }
- 
+
 function leadRow(label,leads,max,cpl){
   const pct = max ? Math.round(leads/max*100) : 0;
   return `<div class="bar"><span class="lab">${label}</span>`+
@@ -248,7 +248,7 @@ function leadRow(label,leads,max,cpl){
     `<span class="num">${int(leads)}</span>`+
     `<span class="cpl">${cpl}</span></div>`;
 }
- 
+
 function renderLeads(){
   const meta=STATE.meta, tt=STATE.tiktok, org=STATE.organic;
   const paidLeads=meta.leads+tt.leads, paidSpend=meta.spend+tt.spend;
@@ -261,7 +261,7 @@ function renderLeads(){
     `<div class="bar tot"><span class="tot-lab">Total leads</span>`+
       `<span class="num">${int(totalLeads)}</span>`+
       `<span class="cpl">${cpl(totalSpend,totalLeads)}</span></div>`;
- 
+
   const redemptions=STATE.customerRows.length;
   const rate = totalLeads ? Math.round(redemptions/totalLeads*100) : 0;
   const costPerRedemption = redemptions>0 ? money(paidSpend/redemptions) : "n/a";
@@ -272,18 +272,18 @@ function renderLeads(){
     barRow("Redemption rate", rate, 100, "%") +
     `<div class="statline"><span class="sl-k">Cost per redemption</span><span class="sl-v">${costPerRedemption}</span></div>`;
 }
- 
+
 function render(rows, source){
   const m = compute(rows);
   document.getElementById("meta").textContent =
     `${int(m.customers)} customers  ${'\u00b7'}  ${source==="baseline" ? ("exported "+EXPORT_DATE) : "re-uploaded file"}`;
- 
+
   document.getElementById("v-orders").textContent = int(m.orders);
   document.getElementById("v-cust").textContent   = int(m.customers);
   document.getElementById("v-opc").textContent    = m.opc.toFixed(2);
   document.getElementById("v-aov").textContent    = money(m.aov);
   document.getElementById("v-subaov").textContent = m.subsequentAOV==null ? "n/a" : money(m.subsequentAOV);
- 
+
   // reachable database (marketing consent), as a share of the cohort
   const panelConsent = document.getElementById("panel-consent");
   if(m.hasConsent){
@@ -295,37 +295,37 @@ function render(rows, source){
   } else {
     panelConsent.style.display = "none";
   }
- 
+
   // orders per customer distribution
   const opcKeys = Object.keys(m.opcDist).map(Number).sort((a,b)=>a-b);
   const opcMax = Math.max(...opcKeys.map(k=>m.opcDist[k]));
   document.getElementById("dist-opc").innerHTML =
     opcKeys.map(k=>barRow(k+(k==1?" order":" orders"), m.opcDist[k], opcMax)).join("");
- 
+
   // geo
   const geoKeys = Object.keys(m.geo).sort((a,b)=>m.geo[b]-m.geo[a]);
   const geoMax = Math.max(...geoKeys.map(k=>m.geo[k]));
   document.getElementById("dist-geo").innerHTML =
     geoKeys.map(k=>barRow(k, m.geo[k], geoMax)).join("");
- 
+
   // spend
   const spendVals = m.spendDist.filter(b=>b[1]>0);
   const spendMax = Math.max(...spendVals.map(b=>b[1]),1);
   document.getElementById("dist-spend").innerHTML =
     spendVals.map(b=>barRow(b[0], b[1], spendMax)).join("");
- 
+
   document.getElementById("foot").textContent =
     `Total spend ${money(m.spent)}  ${'\u00b7'}  source: ${source==="baseline"?"customers_export.csv":"re-uploaded file"}  ${'\u00b7'}  emails, phones and addresses are not stored in this file`;
 }
- 
+
 // Map a re-uploaded Shopify export to the minimal row shape, detecting export type.
 function ingest(data, fields){
   const has = n => fields.some(f=>f.trim().toLowerCase()===n);
   const col = (r,names) => { for(const n of names){ for(const k in r){ if(k.trim().toLowerCase()===n) return r[k]; } } return undefined; };
   const num = v => { const x=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); return isNaN(x)?0:x; };
- 
+
   const yn = v => String(v).trim().toLowerCase()==="yes" ? 1 : 0;
- 
+
   if(has("total orders") && has("total spent")){
     const rows = data.filter(r=>Object.keys(r).length>1).map(r=>({
       orders:Math.round(num(col(r,["total orders"]))),
@@ -351,7 +351,7 @@ function ingest(data, fields){
   const rows=Object.values(perCust);
   return {rows, mode:"orders export (rolled up to one row per customer)"};
 }
- 
+
 // Self-contained CSV parser (handles quoted fields, embedded commas/newlines, "" escapes, CRLF).
 function parseCSV(text){
   if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
@@ -380,7 +380,7 @@ function parseCSV(text){
   }
   return {fields, data};
 }
- 
+
 function loadFile(file){
   const reader=new FileReader();
   reader.onload=()=>{
@@ -390,19 +390,19 @@ function loadFile(file){
   reader.onerror=()=>{ document.getElementById("mode").textContent="Could not read that file."; };
   reader.readAsText(file);
 }
- 
+
 // Dashboard state: one customer source plus the two ad sources, each updated independently on drop.
 const STATE = { customerRows: BASELINE, customerSource:"baseline", meta:AD_DATA.meta, tiktok:AD_DATA.tiktok, organic:AD_DATA.organic };
- 
+
 function renderAll(){
   render(STATE.customerRows, STATE.customerSource);
   renderLeads();
   renderRedemptions();
   renderPnL();
 }
- 
+
 function fmtDay(iso){ const d=new Date(iso); return isNaN(d)?iso:d.toLocaleDateString("en-AU",{day:"numeric",month:"short"}); }
- 
+
 function drawLine(elId, series){
   const el=document.getElementById(elId);
   if(!series || series.length===0){
@@ -426,12 +426,12 @@ function drawLine(elId, series){
   el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" class="linechart" preserveAspectRatio="xMidYMid meet">`+
     grid+`<path d="${area}" class="area"/><path d="${line}" class="line"/>`+marks+xlabs+`</svg>`;
 }
- 
+
 function renderRedemptions(){
   const h=HISTORY.slice().sort((a,b)=> a[0]<b[0]?-1:1);
   drawLine("chart-redemptions", h);
 }
- 
+
 function renderPnL(){
   const m=compute(STATE.customerRows), c=COSTS, rev=m.aov;
   const gstPer=rev*(c.gst/(1+c.gst)), merchantPer=rev*c.merchant;
@@ -476,7 +476,7 @@ function renderPnL(){
   totEl.textContent=signed(cohort); totEl.className="pnl-out-total"+(cohort<0?" loss":"");
   document.getElementById("pnl-orders").textContent=int(m.orders);
 }
- 
+
 // Sum a numeric column across data rows, skipping any platform "Total ..." summary row.
 function sumCol(data, col, nameCol, names){
   const pick=(r,ns)=>{ for(const n of ns){ for(const k in r){ if(k.trim().toLowerCase()===n) return r[k]; } } return undefined; };
@@ -488,14 +488,14 @@ function sumCol(data, col, nameCol, names){
   });
   return sum;
 }
- 
+
 function handleCSV(text){
   const {fields,data}=parseCSV(text);
   const lower=fields.map(f=>f.trim().toLowerCase());
   const hasf=n=>lower.includes(n);
   const rows=data.filter(r=>Object.keys(r).length>1);
   const setMode=t=>document.getElementById("mode").innerHTML=t;
- 
+
   if(hasf("total orders") && hasf("total spent")){
     const {rows:cust,mode}=ingest(data,fields);
     if(!cust.length){ setMode("Could not read any rows from that file."); return; }
@@ -514,12 +514,12 @@ function handleCSV(text){
   }
   renderAll();
 }
- 
+
 const drop=document.getElementById("drop"), input=document.getElementById("file");
 input.addEventListener("change",e=>{ if(e.target.files[0]) loadFile(e.target.files[0]); });
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
 drop.addEventListener("drop",e=>{ if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
- 
+
 renderAll();
 </script>
